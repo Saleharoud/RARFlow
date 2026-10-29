@@ -80,7 +80,8 @@ struct RARFlowApp: App {
     var body: some Scene {
         WindowGroup {
             MainView(appState: appState)
-                .frame(minWidth: 800, minHeight: 520)
+                .frame(minWidth: 880, minHeight: 540)
+                .preferredColorScheme(.dark)
                 .onAppear {
                     appDelegate.appState = appState
                     if let initial = appDelegate.initialLaunchURL {
@@ -102,6 +103,7 @@ struct RARFlowApp: App {
                     appState.handleFileOpenRequest(url: url)
                 }
         }
+        .windowStyle(.hiddenTitleBar)
         .commands {
             CommandGroup(replacing: .newItem) {
                 Button("Open Archive...") {

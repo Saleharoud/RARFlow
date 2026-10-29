@@ -127,6 +127,7 @@ public struct SettingsView: View {
             }
             .padding(28)
         }
+        .background(RARFlowTheme.bgWindow)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 

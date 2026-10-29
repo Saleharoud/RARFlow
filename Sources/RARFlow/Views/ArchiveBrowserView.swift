@@ -8,33 +8,30 @@ public struct ArchiveBrowserView: View {
     public var body: some View {
         VStack(spacing: 0) {
             if let activeURL = appState.activeArchiveURL {
-                // Top archive header bar
-                archiveHeaderBar(activeURL: activeURL)
-                Divider()
+                // Optional subfolder navigation bar
+                if !appState.currentFolderPrefix.isEmpty || appState.isFlatView {
+                    folderNavigationBar(activeURL: activeURL)
+                    Divider()
+                        .background(RARFlowTheme.borderSubtle)
+                }
 
                 // File Table
                 if appState.displayedItems.isEmpty {
-                    VStack(spacing: 12) {
-                        Image(systemName: "folder.badge.questionmark")
-                            .font(.system(size: 40))
-                            .foregroundStyle(.secondary)
-                        Text(appState.searchQuery.isEmpty ? "This folder is empty" : "No matches found for '\(appState.searchQuery)'")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    emptyFolderView
                 } else {
                     fileTable
                 }
 
                 Divider()
+                    .background(RARFlowTheme.borderSubtle)
+
                 // Bottom Status Bar
                 bottomStatusBar
             } else {
                 noArchivePlaceholder
             }
         }
-        .searchable(text: $appState.searchQuery, placement: .toolbar, prompt: "Search files in archive")
+        .background(RARFlowTheme.bgWindow)
         .sheet(isPresented: $appState.showInfoSheet) {
             if let meta = appState.archiveMetadata {
                 ArchiveInfoSheet(metadata: meta)
@@ -42,92 +39,85 @@ public struct ArchiveBrowserView: View {
         }
     }
 
-    // MARK: - Header Bar
-    private func archiveHeaderBar(activeURL: URL) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: "archivebox.fill")
-                .foregroundStyle(.tint)
-                .font(.title3)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(activeURL.lastPathComponent)
-                    .font(.headline)
-                    .lineLimit(1)
-                HStack(spacing: 8) {
-                    if !appState.currentFolderPrefix.isEmpty {
-                        Button {
-                            navigateUp()
-                        } label: {
-                            Label("Up", systemImage: "arrow.up.left")
-                        }
-                        .buttonStyle(.accessoryBar)
-
-                        Text(appState.currentFolderPrefix)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    } else {
-                        Text(appState.archiveMetadata?.formatName ?? "Archive")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+    // MARK: - Subfolder Navigation Bar
+    private func folderNavigationBar(activeURL: URL) -> some View {
+        HStack(spacing: 10) {
+            if !appState.currentFolderPrefix.isEmpty {
+                Button {
+                    navigateUp()
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 11, weight: .semibold))
+                        Text("Up")
+                            .font(.system(size: 12, weight: .medium))
                     }
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 4)
+                    .background(RARFlowTheme.bgPill)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(RARFlowTheme.borderSubtle, lineWidth: 1)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 5))
                 }
+                .buttonStyle(.plain)
+
+                HStack(spacing: 4) {
+                    Image(systemName: "folder.fill")
+                        .font(.system(size: 12))
+                        .foregroundStyle(RARFlowTheme.accentCyan)
+                    Text(appState.currentFolderPrefix)
+                        .font(.system(size: 12, weight: .medium, design: .monospaced))
+                        .foregroundStyle(RARFlowTheme.textSecondary)
+                }
+            } else {
+                Text(activeURL.lastPathComponent)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(RARFlowTheme.textSecondary)
             }
 
             Spacer()
 
-            // Flat / Tree Toggle
-            Toggle(isOn: $appState.isFlatView) {
-                Label("Flat View", systemImage: appState.isFlatView ? "list.bullet.rectangle" : "folder")
+            // Flat View Toggle
+            Button {
+                appState.isFlatView.toggle()
+            } label: {
+                HStack(spacing: 5) {
+                    Image(systemName: appState.isFlatView ? "list.bullet.rectangle" : "folder")
+                        .font(.system(size: 11))
+                    Text(appState.isFlatView ? "Flat View" : "Folders")
+                        .font(.system(size: 11, weight: .medium))
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(appState.isFlatView ? RARFlowTheme.bgPillActive : RARFlowTheme.bgPill)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 5)
+                        .stroke(RARFlowTheme.borderSubtle, lineWidth: 1)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 5))
             }
-            .toggleStyle(.button)
+            .buttonStyle(.plain)
             .help("Toggle between hierarchical folder view and flat list of all files")
 
-            // Quick Look Button
-            Button {
-                appState.quickLookSelectedItem()
-            } label: {
-                Label("Quick Look", systemImage: "eye")
-            }
-            .keyboardShortcut(.space, modifiers: [])
-            .disabled(appState.selectedItemIDs.isEmpty)
-            .help("Preview selected file with Quick Look (Space)")
-
-            // Test Integrity
-            Button {
-                appState.testCurrentArchive()
-            } label: {
-                Label("Test", systemImage: "checkmark.shield")
-            }
-            .help("Test archive integrity and checksums")
-
-            // Info
+            // Info Button
             Button {
                 appState.showInfoSheet = true
             } label: {
-                Label("Info", systemImage: "info.circle")
+                Image(systemName: "info.circle")
+                    .font(.system(size: 12))
+                    .foregroundStyle(RARFlowTheme.textSecondary)
+                    .padding(5)
+                    .background(RARFlowTheme.bgPill)
+                    .clipShape(Circle())
             }
+            .buttonStyle(.plain)
             .help("View archive technical details")
-
-            // Extract Selected
-            Button {
-                appState.extractSelected()
-            } label: {
-                Label("Extract Selected\(appState.selectedItemIDs.isEmpty ? "" : " (\(appState.selectedItemIDs.count))")", systemImage: "arrow.down.doc")
-            }
-            .disabled(appState.selectedItemIDs.isEmpty)
-
-            // Extract All
-            Button {
-                appState.extractAll()
-            } label: {
-                Label("Extract All", systemImage: "arrow.down.circle.fill")
-            }
-            .buttonStyle(.borderedProminent)
-            .keyboardShortcut("e", modifiers: [.command])
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .background(Color(nsColor: .controlBackgroundColor))
+        .padding(.horizontal, 14)
+        .padding(.vertical, 6)
+        .background(RARFlowTheme.bgTableHeader)
     }
 
     // MARK: - File Table
@@ -136,61 +126,80 @@ public struct ArchiveBrowserView: View {
             TableColumn("Name") { item in
                 HStack(spacing: 8) {
                     Image(systemName: item.systemIconName)
-                        .foregroundStyle(item.isDirectory ? Color.accentColor : Color.secondary)
+                        .font(.system(size: 13))
+                        .foregroundStyle(item.iconColor)
                         .frame(width: 18)
 
                     Text(item.filename)
-                        .fontWeight(item.isDirectory ? .medium : .regular)
+                        .font(.system(size: 13, weight: item.isDirectory ? .medium : .regular))
+                        .foregroundStyle(RARFlowTheme.textPrimary)
+                        .lineLimit(1)
 
                     if item.isEncrypted {
-                        Image(systemName: "lock.fill")
-                            .font(.caption2)
-                            .foregroundStyle(.yellow)
+                        Text("AES-256")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(RARFlowTheme.accentAmber)
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
                     }
                 }
                 .contextMenu {
                     tableItemContextMenu(item: item)
                 }
             }
-            .width(min: 220, ideal: 300)
+            .width(min: 220, ideal: 320)
 
             TableColumn("Size") { item in
                 Text(item.humanReadableSize)
-                    .foregroundStyle(.secondary)
-                    .monospacedDigit()
+                    .font(.system(size: 12, design: .monospaced))
+                    .foregroundStyle(RARFlowTheme.textSecondary)
             }
-            .width(min: 70, ideal: 90)
+            .width(min: 75, ideal: 95)
 
             TableColumn("Packed") { item in
                 Text(item.humanReadableCompressedSize)
-                    .foregroundStyle(.secondary)
-                    .monospacedDigit()
+                    .font(.system(size: 12, design: .monospaced))
+                    .foregroundStyle(RARFlowTheme.textSecondary)
             }
-            .width(min: 70, ideal: 90)
+            .width(min: 75, ideal: 95)
 
             TableColumn("Ratio") { item in
-                Text(item.compressionRatioString)
-                    .foregroundStyle(.secondary)
-                    .monospacedDigit()
+                if let ratio = item.ratioDouble {
+                    Text(String(format: "%.1f%%", ratio))
+                        .font(.system(size: 12, weight: .semibold, design: .monospaced))
+                        .foregroundStyle(ratio < 50.0 ? RARFlowTheme.accentCyan : RARFlowTheme.accentGreen)
+                } else {
+                    Text("--")
+                        .font(.system(size: 12, design: .monospaced))
+                        .foregroundStyle(RARFlowTheme.textMuted)
+                }
             }
-            .width(min: 60, ideal: 70)
+            .width(min: 65, ideal: 75)
 
-            TableColumn("Date Modified") { item in
+            TableColumn("Modified") { item in
                 Text(item.formattedDate)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 12))
+                    .foregroundStyle(RARFlowTheme.textSecondary)
             }
-            .width(min: 130, ideal: 150)
+            .width(min: 120, ideal: 140)
 
             TableColumn("CRC32") { item in
                 Text(item.crc32 ?? "--")
-                    .foregroundStyle(.tertiary)
-                    .font(.caption.monospaced())
+                    .font(.system(size: 11, design: .monospaced))
+                    .foregroundStyle(RARFlowTheme.textMuted)
             }
-            .width(min: 80, ideal: 90)
+            .width(min: 75, ideal: 90)
         }
-        .onDoubleClick {
-            handleDoubleClick()
-        }
+        .alternatingRowBackgrounds(.disabled)
+        .scrollContentBackground(.hidden)
+        .background(RARFlowTheme.bgTable)
+        .simultaneousGesture(
+            TapGesture(count: 2).onEnded {
+                handleDoubleClick()
+            }
+        )
     }
 
     private func handleDoubleClick() {
@@ -245,168 +254,171 @@ public struct ArchiveBrowserView: View {
 
     // MARK: - Status Bar
     private var bottomStatusBar: some View {
-        HStack(spacing: 16) {
-            Text("\(appState.displayedItems.count) items")
-                .foregroundStyle(.secondary)
+        HStack(spacing: 8) {
+            Text("Showing \(appState.displayedItems.count) of \(appState.archiveItems.count) items")
+                .foregroundStyle(RARFlowTheme.textMuted)
 
             if let meta = appState.archiveMetadata {
                 Text("•")
-                    .foregroundStyle(.tertiary)
-                Text("Uncompressed: \(meta.humanReadableUncompressedSize)")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(RARFlowTheme.borderMedium)
+                Text("Total Uncompressed: \(meta.humanReadableUncompressedSize)")
+                    .foregroundStyle(RARFlowTheme.textMuted)
                 Text("•")
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(RARFlowTheme.borderMedium)
                 Text("Compressed: \(meta.humanReadablePhysicalSize)")
-                    .foregroundStyle(.secondary)
-                Text("•")
-                    .foregroundStyle(.tertiary)
-                Text("Ratio: \(meta.overallRatioString)")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(RARFlowTheme.textMuted)
             }
 
             Spacer()
 
             if !appState.selectedItemIDs.isEmpty {
-                Text("\(appState.selectedItemIDs.count) selected")
-                    .foregroundStyle(.tint)
+                Text("\(appState.selectedItemIDs.count) items selected (\(appState.selectedItemsByteCountString)) — Press ")
+                    .foregroundStyle(RARFlowTheme.accentCyan)
+                +
+                Text("Space")
+                    .bold()
+                    .foregroundStyle(RARFlowTheme.accentCyan)
+                +
+                Text(" for Quick Look")
+                    .foregroundStyle(RARFlowTheme.accentCyan)
+            } else {
+                Text("Press Space for Quick Look • Double-click to open")
+                    .foregroundStyle(RARFlowTheme.textMuted)
             }
         }
-        .font(.caption)
-        .padding(.horizontal, 16)
-        .padding(.vertical, 6)
-        .background(Color(nsColor: .windowBackgroundColor))
+        .font(.system(size: 11))
+        .padding(.horizontal, 14)
+        .frame(height: 28)
+        .background(RARFlowTheme.bgStatusBar)
     }
 
-    // MARK: - No Archive Placeholder
-    private var noArchivePlaceholder: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "archivebox")
-                .font(.system(size: 64))
-                .foregroundStyle(.tertiary)
+    // MARK: - Empty States
+    private var emptyFolderView: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "folder.badge.questionmark")
+                .font(.system(size: 40))
+                .foregroundStyle(RARFlowTheme.textMuted)
+            Text(appState.searchQuery.isEmpty ? "This folder is empty" : "No matches found for '\(appState.searchQuery)'")
+                .font(.headline)
+                .foregroundStyle(RARFlowTheme.textSecondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
 
-            VStack(spacing: 6) {
-                Text("No Archive Loaded")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                Text("Open a RAR, 7Z, ZIP, or TAR archive to browse its contents, or switch to Drop Zone to extract.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: 400)
+    private var noArchivePlaceholder: some View {
+        VStack(spacing: 24) {
+            ZStack {
+                Circle()
+                    .fill(RARFlowTheme.accentCyan.opacity(0.10))
+                    .frame(width: 100, height: 100)
+                Image(systemName: "archivebox")
+                    .font(.system(size: 48))
+                    .foregroundStyle(RARFlowTheme.accentCyan)
             }
 
-            HStack(spacing: 12) {
+            VStack(spacing: 8) {
+                Text("No Archive Loaded")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(RARFlowTheme.textPrimary)
+
+                Text("Open a RAR, 7Z, ZIP, or TAR archive to browse its contents,\nor drag files to the Drop Zone to compress them.")
+                    .font(.system(size: 13))
+                    .foregroundStyle(RARFlowTheme.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 420)
+            }
+
+            HStack(spacing: 14) {
                 Button {
                     appState.chooseArchiveFileToOpen()
                 } label: {
-                    Label("Open Archive...", systemImage: "folder")
+                    HStack(spacing: 6) {
+                        Image(systemName: "archivebox.fill")
+                        Text("Open Archive...")
+                    }
+                    .font(.system(size: 13, weight: .medium))
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(RARFlowTheme.bgPillActive)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 6)
+                            .stroke(RARFlowTheme.borderActive, lineWidth: 1)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
+                .buttonStyle(.plain)
 
                 Button {
                     appState.selectedSection = .dropZone
                 } label: {
-                    Label("Go to Drop Zone", systemImage: "arrow.down.doc")
+                    HStack(spacing: 6) {
+                        Image(systemName: "tray.and.arrow.down.fill")
+                        Text("Go to Drop Zone")
+                    }
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(RARFlowTheme.accentBlue)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
                 }
-                .controlSize(.large)
+                .buttonStyle(.plain)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding()
     }
 }
 
 // MARK: - Archive Info Sheet
 public struct ArchiveInfoSheet: View {
+    let metadata: ArchiveMetadata
     @Environment(\.dismiss) private var dismiss
-    public let metadata: ArchiveMetadata
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            HStack(spacing: 12) {
-                Image(systemName: metadata.format?.iconName ?? "archivebox.fill")
-                    .font(.system(size: 36))
-                    .foregroundStyle(.tint)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(metadata.archiveURL.lastPathComponent)
-                        .font(.headline)
-                    Text(metadata.formatName)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-            }
-
-            Divider()
-
-            Grid(alignment: .leading, horizontalSpacing: 24, verticalSpacing: 10) {
-                GridRow {
-                    Text("Physical File Size:").bold()
-                    Text(metadata.humanReadablePhysicalSize)
-                }
-                GridRow {
-                    Text("Uncompressed Size:").bold()
-                    Text(metadata.humanReadableUncompressedSize)
-                }
-                GridRow {
-                    Text("Overall Ratio:").bold()
-                    Text(metadata.overallRatioString)
-                }
-                GridRow {
-                    Text("Total Files:").bold()
-                    Text("\(metadata.fileCount) files, \(metadata.folderCount) folders")
-                }
-                GridRow {
-                    Text("Solid Archive:").bold()
-                    Text(metadata.isSolid ? "Yes" : "No")
-                }
-                GridRow {
-                    Text("Encrypted:").bold()
-                    Text(metadata.isEncrypted ? "Yes (Password Protected)" : "No")
-                }
-                GridRow {
-                    Text("Volumes:").bold()
-                    Text("\(metadata.volumesCount)")
-                }
-                if let comment = metadata.comment, !comment.isEmpty {
-                    GridRow {
-                        Text("Comment:").bold()
-                        Text(comment)
-                    }
-                }
-            }
-            .font(.callout)
-
-            Divider()
-
+        VStack(spacing: 20) {
             HStack {
+                Text("Archive Technical Details")
+                    .font(.headline)
+                    .foregroundStyle(RARFlowTheme.textPrimary)
                 Spacer()
                 Button("Done") {
                     dismiss()
                 }
                 .keyboardShortcut(.defaultAction)
-                .controlSize(.large)
             }
+
+            VStack(spacing: 10) {
+                infoRow("Archive File", value: metadata.archiveURL.lastPathComponent)
+                infoRow("Format", value: metadata.formatName)
+                infoRow("Total Items", value: "\(metadata.fileCount) files, \(metadata.folderCount) folders")
+                infoRow("Compressed Size", value: metadata.humanReadablePhysicalSize)
+                infoRow("Uncompressed Size", value: metadata.humanReadableUncompressedSize)
+                infoRow("Compression Ratio", value: metadata.overallRatioString)
+                infoRow("Solid Archive", value: metadata.isSolid ? "Yes (Block compression)" : "No")
+                infoRow("Encrypted", value: metadata.isEncrypted ? "Yes (Password protected)" : "No")
+                infoRow("Split Volumes", value: metadata.volumesCount > 1 ? "\(metadata.volumesCount) parts" : "Single archive")
+            }
+            .padding(14)
+            .background(RARFlowTheme.bgPill)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            Spacer()
         }
-        .padding(24)
-        .frame(minWidth: 420)
+        .padding(20)
+        .frame(width: 480, height: 420)
+        .background(RARFlowTheme.bgWindow)
     }
-}
 
-// Helper extension for double click
-extension View {
-    func onDoubleClick(perform action: @escaping () -> Void) -> some View {
-        self.modifier(DoubleClickHandler(action: action))
-    }
-}
-
-struct DoubleClickHandler: ViewModifier {
-    let action: () -> Void
-    func body(content: Content) -> some View {
-        content.simultaneousGesture(
-            TapGesture(count: 2).onEnded {
-                action()
-            }
-        )
+    private func infoRow(_ label: String, value: String) -> some View {
+        HStack {
+            Text(label)
+                .font(.caption.bold())
+                .foregroundStyle(RARFlowTheme.textMuted)
+                .frame(width: 140, alignment: .leading)
+            Text(value)
+                .font(.caption)
+                .foregroundStyle(RARFlowTheme.textPrimary)
+            Spacer()
+        }
     }
 }

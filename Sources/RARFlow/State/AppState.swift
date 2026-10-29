@@ -113,6 +113,18 @@ public final class AppState {
         }
     }
 
+    public var selectedItems: [ArchiveItem] {
+        archiveItems.filter { selectedItemIDs.contains($0.id) }
+    }
+
+    public var selectedItemsByteCount: Int64 {
+        selectedItems.reduce(0) { $0 + $1.uncompressedSize }
+    }
+
+    public var selectedItemsByteCountString: String {
+        ByteCountFormatter.string(fromByteCount: selectedItemsByteCount, countStyle: .file)
+    }
+
     // MARK: - Handle External File Open (from Finder, CLI, Dock)
     public func handleFileOpenRequest(url: URL) {
         if ArchiveFormat.detect(from: url) != nil {

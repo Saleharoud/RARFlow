@@ -50,18 +50,32 @@ public struct ArchiveItem: Identifiable, Hashable, Sendable {
         return ByteCountFormatter.string(fromByteCount: compressedSize, countStyle: .file)
     }
 
+    public var ratioDouble: Double? {
+        guard !isDirectory, uncompressedSize > 0, compressedSize > 0 else { return nil }
+        return Double(compressedSize) / Double(uncompressedSize) * 100.0
+    }
+
     public var compressionRatioString: String {
-        if isDirectory || uncompressedSize <= 0 || compressedSize <= 0 { return "--" }
-        let ratio = Double(compressedSize) / Double(uncompressedSize) * 100.0
+        guard let ratio = ratioDouble else { return "--" }
         return String(format: "%.1f%%", ratio)
     }
 
     public var formattedDate: String {
         guard let date = modifiedDate else { return "--" }
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
+        let calendar = Calendar.current
+        if calendar.isDateInToday(date) {
+            let timeFormatter = DateFormatter()
+            timeFormatter.dateFormat = "HH:mm"
+            return "Today \(timeFormatter.string(from: date))"
+        } else if calendar.isDateInYesterday(date) {
+            let timeFormatter = DateFormatter()
+            timeFormatter.dateFormat = "HH:mm"
+            return "Yesterday \(timeFormatter.string(from: date))"
+        } else {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "MMM d, yyyy"
+            return dateFormatter.string(from: date)
+        }
     }
 
     public var systemIconName: String {
@@ -81,13 +95,36 @@ public struct ArchiveItem: Identifiable, Hashable, Sendable {
         case "swift", "py", "js", "ts", "c", "cpp", "h", "java", "html", "css", "json", "xml", "sh":
             return "chevron.left.forwardslash.chevron.right"
         case "zip", "rar", "7z", "tar", "gz", "bz2", "xz":
-            return "doc.zipper"
+            return "archivebox.fill"
+        case "key", "pem", "crt", "env", "token", "secret":
+            return "lock.fill"
         case "dmg", "iso", "img":
             return "opticaldisc.fill"
         case "app":
             return "app.badge.fill"
         default:
             return "doc.fill"
+        }
+    }
+
+    public var iconColor: Color {
+        if isDirectory { return Color(red: 0.22, green: 0.74, blue: 0.97) }
+        let ext = (filename as NSString).pathExtension.lowercased()
+        switch ext {
+        case "jpg", "jpeg", "png", "gif", "webp", "heic", "tiff", "bmp", "svg":
+            return Color(red: 0.06, green: 0.73, blue: 0.51)
+        case "mp4", "mov", "mkv", "avi", "webm", "m4v":
+            return Color(red: 0.96, green: 0.25, blue: 0.37)
+        case "mp3", "m4a", "flac", "wav", "aac", "ogg":
+            return Color(red: 0.66, green: 0.33, blue: 0.97)
+        case "pdf":
+            return Color(red: 0.38, green: 0.65, blue: 0.98)
+        case "key", "pem", "crt", "env", "token", "secret":
+            return Color(red: 0.98, green: 0.75, blue: 0.14)
+        case "zip", "rar", "7z", "tar", "gz", "bz2", "xz":
+            return Color(red: 0.98, green: 0.45, blue: 0.09)
+        default:
+            return Color(red: 0.60, green: 0.68, blue: 0.78)
         }
     }
 }

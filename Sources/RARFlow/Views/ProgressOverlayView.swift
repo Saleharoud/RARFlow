@@ -5,7 +5,7 @@ public struct ProgressOverlayView: View {
 
     public var body: some View {
         ZStack {
-            Color.black.opacity(0.35)
+            Color.black.opacity(0.65)
                 .ignoresSafeArea()
 
             VStack(spacing: 16) {
@@ -13,25 +13,27 @@ public struct ProgressOverlayView: View {
                     ProgressView()
                         .controlSize(.regular)
                     Text(appState.busyTitle)
-                        .font(.headline)
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(RARFlowTheme.textPrimary)
                     Spacer()
                 }
 
                 ProgressView(value: appState.progress)
                     .progressViewStyle(.linear)
+                    .tint(RARFlowTheme.accentBlue)
 
                 HStack {
                     Text(appState.progressDetail)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 12))
+                        .foregroundStyle(RARFlowTheme.textSecondary)
                         .lineLimit(1)
                         .truncationMode(.middle)
 
                     Spacer()
 
                     Text(String(format: "%.0f%%", appState.progress * 100))
-                        .font(.caption.monospacedDigit().bold())
-                        .foregroundStyle(.tint)
+                        .font(.system(size: 12, weight: .bold, design: .monospaced))
+                        .foregroundStyle(RARFlowTheme.accentCyan)
                 }
 
                 HStack {
@@ -39,6 +41,13 @@ public struct ProgressOverlayView: View {
                     Button("Cancel") {
                         appState.cancelCurrentOperation()
                     }
+                    .buttonStyle(.plain)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(RARFlowTheme.textSecondary)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 6)
+                    .background(RARFlowTheme.bgPill)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
                     .keyboardShortcut(.cancelAction)
                 }
             }
@@ -46,8 +55,12 @@ public struct ProgressOverlayView: View {
             .frame(width: 440)
             .background(
                 RoundedRectangle(cornerRadius: 14)
-                    .fill(Color(nsColor: .windowBackgroundColor))
-                    .shadow(color: .black.opacity(0.25), radius: 20, x: 0, y: 10)
+                    .fill(RARFlowTheme.bgHeader)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(RARFlowTheme.borderMedium, lineWidth: 1)
+                    )
+                    .shadow(color: .black.opacity(0.4), radius: 24, x: 0, y: 12)
             )
         }
     }

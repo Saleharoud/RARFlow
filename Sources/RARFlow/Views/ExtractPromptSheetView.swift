@@ -45,19 +45,20 @@ public struct ExtractPromptSheetView: View {
             HStack(spacing: 16) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.accentColor.opacity(0.12))
-                        .frame(width: 56, height: 56)
-                    Image(systemName: "archivebox.circle.fill")
-                        .font(.system(size: 34))
-                        .foregroundStyle(.tint)
+                        .fill(RARFlowTheme.accentBlue.opacity(0.18))
+                        .frame(width: 54, height: 54)
+                    Image(systemName: "archivebox.fill")
+                        .font(.system(size: 28))
+                        .foregroundStyle(RARFlowTheme.accentCyan)
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Extract Archive?")
-                        .font(.title3.bold())
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundStyle(RARFlowTheme.textPrimary)
                     Text("Do you want to extract **\(archiveName)**?")
-                        .font(.subheadline)
-                        .foregroundStyle(.primary)
+                        .font(.system(size: 13))
+                        .foregroundStyle(RARFlowTheme.textSecondary)
                 }
 
                 Spacer()
@@ -68,47 +69,52 @@ public struct ExtractPromptSheetView: View {
                 HStack {
                     Text("File Size:")
                         .font(.caption.bold())
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(RARFlowTheme.textMuted)
                         .frame(width: 90, alignment: .leading)
                     Text(fileSizeString.isEmpty ? "Unknown" : fileSizeString)
-                        .font(.caption)
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(RARFlowTheme.textPrimary)
                 }
 
                 HStack {
                     Text("Format:")
                         .font(.caption.bold())
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(RARFlowTheme.textMuted)
                         .frame(width: 90, alignment: .leading)
                     Text(targetURL.flatMap { ArchiveFormat.detect(from: $0) }?.displayName ?? "Compressed Archive")
                         .font(.caption)
+                        .foregroundStyle(RARFlowTheme.textPrimary)
                 }
 
                 HStack {
                     Text("Extract To:")
                         .font(.caption.bold())
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(RARFlowTheme.textMuted)
                         .frame(width: 90, alignment: .leading)
                     Text(plannedDestinationFolder.path)
                         .font(.caption)
                         .lineLimit(1)
                         .truncationMode(.middle)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(RARFlowTheme.textSecondary)
                 }
             }
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(nsColor: .controlBackgroundColor))
+            .background(RARFlowTheme.bgPill)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(RARFlowTheme.borderSubtle, lineWidth: 1)
             )
+            .clipShape(RoundedRectangle(cornerRadius: 8))
 
             // Remember checkbox
             Toggle("Always perform this action without asking", isOn: $rememberPreference)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(.system(size: 12))
+                .foregroundStyle(RARFlowTheme.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Divider()
+                .background(RARFlowTheme.borderSubtle)
 
             // Action Buttons
             HStack(spacing: 10) {
@@ -116,6 +122,12 @@ public struct ExtractPromptSheetView: View {
                     appState.showExtractPromptDialog = false
                     appState.pendingOpenURL = nil
                 }
+                .buttonStyle(.plain)
+                .foregroundStyle(RARFlowTheme.textSecondary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(RARFlowTheme.bgPill)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
                 .keyboardShortcut(.cancelAction)
 
                 Spacer()
@@ -123,21 +135,49 @@ public struct ExtractPromptSheetView: View {
                 Button("Browse Files") {
                     handleBrowse()
                 }
+                .buttonStyle(.plain)
+                .foregroundStyle(RARFlowTheme.textPrimary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(RARFlowTheme.bgPillActive)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(RARFlowTheme.borderActive, lineWidth: 1)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 6))
                 .help("Open and view archive contents without extracting")
 
                 Button("Extract To...") {
                     handleExtractTo()
                 }
+                .buttonStyle(.plain)
+                .foregroundStyle(RARFlowTheme.textPrimary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(RARFlowTheme.bgPillActive)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(RARFlowTheme.borderActive, lineWidth: 1)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 6))
 
                 Button("Extract Now") {
                     handleExtractNow()
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.plain)
+                .foregroundStyle(.white)
+                .font(.system(size: 13, weight: .bold))
+                .padding(.horizontal, 16)
+                .padding(.vertical, 6)
+                .background(RARFlowTheme.accentBlue)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .shadow(color: RARFlowTheme.accentBlue.opacity(0.35), radius: 6, x: 0, y: 2)
                 .keyboardShortcut(.defaultAction)
             }
         }
         .padding(24)
         .frame(width: 500)
+        .background(RARFlowTheme.bgWindow)
     }
 
     private func handleExtractNow() {

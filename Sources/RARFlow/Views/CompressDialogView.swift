@@ -101,9 +101,10 @@ public struct CompressDialogView: View {
             }
             .padding(.horizontal, 24)
             .padding(.vertical, 16)
-            .background(Color(nsColor: .windowBackgroundColor))
+            .background(RARFlowTheme.bgToolbar)
         }
         .frame(width: 580, height: 640)
+        .background(RARFlowTheme.bgWindow)
         .onAppear {
             initializeDefaults()
         }

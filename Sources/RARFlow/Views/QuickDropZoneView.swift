@@ -6,45 +6,64 @@ public struct QuickDropZoneView: View {
     @State private var isTargeted: Bool = false
 
     public var body: some View {
-        VStack(spacing: 32) {
+        VStack(spacing: 28) {
             // Main Drop Target Box
             ZStack {
                 RoundedRectangle(cornerRadius: 16)
                     .strokeBorder(
-                        isTargeted ? Color.accentColor : Color.secondary.opacity(0.35),
-                        style: StrokeStyle(lineWidth: isTargeted ? 3 : 2, dash: [8, 6])
+                        isTargeted ? RARFlowTheme.accentCyan : RARFlowTheme.borderMedium,
+                        style: StrokeStyle(lineWidth: isTargeted ? 2.5 : 1.5, dash: [8, 6])
                     )
                     .background(
                         RoundedRectangle(cornerRadius: 16)
-                            .fill(isTargeted ? Color.accentColor.opacity(0.08) : Color(nsColor: .controlBackgroundColor).opacity(0.4))
+                            .fill(isTargeted ? RARFlowTheme.accentBlue.opacity(0.12) : RARFlowTheme.bgPill)
                     )
 
                 VStack(spacing: 18) {
-                    Image(systemName: isTargeted ? "arrow.down.circle.fill" : "arrow.down.doc")
-                        .font(.system(size: 64))
-                        .foregroundStyle(isTargeted ? Color.accentColor : Color.secondary)
-                        .scaleEffect(isTargeted ? 1.15 : 1.0)
-                        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isTargeted)
+                    ZStack {
+                        Circle()
+                            .fill(isTargeted ? RARFlowTheme.accentCyan.opacity(0.15) : RARFlowTheme.bgPillActive)
+                            .frame(width: 80, height: 80)
 
-                    VStack(spacing: 6) {
-                        Text(isTargeted ? "Drop Files Here!" : "Drop Archives or Files Here")
-                            .font(.title2)
-                            .fontWeight(.bold)
+                        Image(systemName: isTargeted ? "arrow.down.circle.fill" : "tray.and.arrow.down.fill")
+                            .font(.system(size: 42))
+                            .foregroundStyle(isTargeted ? RARFlowTheme.accentCyan : RARFlowTheme.accentBlue)
+                            .scaleEffect(isTargeted ? 1.15 : 1.0)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isTargeted)
+                    }
+
+                    VStack(spacing: 8) {
+                        Text(isTargeted ? "Release to Open or Compress!" : "Drop Archives or Files Here")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundStyle(RARFlowTheme.textPrimary)
 
                         Text("Drop any **RAR, 7Z, ZIP, or TAR** archive to inspect or extract it.\nDrop **files or folders** to compress them into an archive.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(.system(size: 13))
+                            .foregroundStyle(RARFlowTheme.textSecondary)
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: 440)
                     }
 
-                    HStack(spacing: 16) {
+                    HStack(spacing: 14) {
                         Button {
                             appState.chooseArchiveFileToOpen()
                         } label: {
-                            Label("Open Archive...", systemImage: "archivebox")
+                            HStack(spacing: 6) {
+                                Image(systemName: "archivebox.fill")
+                                Text("Open Archive...")
+                            }
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(RARFlowTheme.textPrimary)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(RARFlowTheme.bgPillActive)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .stroke(RARFlowTheme.borderActive, lineWidth: 1)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
                         }
-                        .controlSize(.large)
+                        .buttonStyle(.plain)
 
                         Button {
                             let panel = NSOpenPanel()
@@ -57,29 +76,38 @@ public struct QuickDropZoneView: View {
                                 appState.startCompressWizard(with: panel.urls)
                             }
                         } label: {
-                            Label("Compress Files...", systemImage: "doc.zipper")
+                            HStack(spacing: 6) {
+                                Image(systemName: "doc.zipper")
+                                Text("Compress Files...")
+                            }
+                            .font(.system(size: 13, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(RARFlowTheme.accentBlue)
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                            .shadow(color: RARFlowTheme.accentBlue.opacity(0.35), radius: 8, x: 0, y: 3)
                         }
-                        .controlSize(.large)
-                        .buttonStyle(.borderedProminent)
+                        .buttonStyle(.plain)
                     }
-                    .padding(.top, 8)
+                    .padding(.top, 4)
                 }
-                .padding(40)
+                .padding(36)
             }
-            .frame(maxWidth: 650, maxHeight: 380)
+            .frame(maxWidth: 640, maxHeight: 370)
             .onDrop(of: [.fileURL], isTargeted: $isTargeted) { providers in
                 handleDroppedProviders(providers)
             }
 
-            // Format Badge Grid
+            // Format Badges Grid
             VStack(spacing: 10) {
                 Text("SUPPORTED FORMATS")
-                    .font(.caption2.bold())
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(RARFlowTheme.textMuted)
                     .tracking(1.2)
 
-                HStack(spacing: 10) {
-                    formatTag(name: "RAR / RAR5", isExtractOnly: true)
+                HStack(spacing: 8) {
+                    formatTag(name: "RAR / RAR5 / RAR7", isExtractOnly: true)
                     formatTag(name: "7-Zip (.7z)", isExtractOnly: false)
                     formatTag(name: "ZIP (.zip)", isExtractOnly: false)
                     formatTag(name: "TAR / GZ / XZ", isExtractOnly: false)
@@ -89,24 +117,29 @@ public struct QuickDropZoneView: View {
         }
         .padding(32)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(RARFlowTheme.bgWindow)
     }
 
     private func formatTag(name: String, isExtractOnly: Bool) -> some View {
         HStack(spacing: 4) {
             Text(name)
-                .font(.caption.bold())
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(RARFlowTheme.textSecondary)
+
             if isExtractOnly {
                 Text("(Extract)")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 9))
+                    .foregroundStyle(RARFlowTheme.textMuted)
             }
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 5)
-        .background(
-            RoundedRectangle(cornerRadius: 6)
-                .fill(Color(nsColor: .controlBackgroundColor))
+        .padding(.horizontal, 9)
+        .padding(.vertical, 4)
+        .background(RARFlowTheme.bgPill)
+        .overlay(
+            RoundedRectangle(cornerRadius: 5)
+                .stroke(RARFlowTheme.borderSubtle, lineWidth: 1)
         )
+        .clipShape(RoundedRectangle(cornerRadius: 5))
     }
 
     private func handleDroppedProviders(_ providers: [NSItemProvider]) -> Bool {

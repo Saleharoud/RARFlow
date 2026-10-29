@@ -4,11 +4,22 @@ public struct MainView: View {
     @Bindable var appState: AppState
 
     public var body: some View {
-        NavigationSplitView {
-            SidebarView(appState: appState)
-        } detail: {
-            detailContent
+        VStack(spacing: 0) {
+            // 1. Top Window Header Bar (Traffic lights area + Centered Title + Format Pill)
+            WindowHeaderView(appState: appState)
+
+            // 2. Toolbar Bar (Mode Switcher + Search Field + Actions)
+            WindowToolbarView(appState: appState)
+
+            // 3. Body: Sidebar on Left + Detail View on Right
+            HStack(spacing: 0) {
+                SidebarView(appState: appState)
+
+                detailContent
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
         }
+        .background(RARFlowTheme.bgWindow)
         .sheet(isPresented: $appState.showCompressSheet) {
             CompressDialogView(appState: appState)
         }
