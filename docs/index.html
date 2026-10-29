@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>RARFlow — The Native macOS RAR & Archive Suite</title>
+  <meta name="description" content="Lightning-fast, native macOS archive suite. Full RAR 1.5–7.x extraction & creation, Spacebar Quick Look inside archives, AES-256 encryption, split volumes, and Finder right-click actions.">
+  <meta name="keywords" content="macOS, RAR, 7-Zip, unrar, Swift, SwiftUI, archive manager, Apple Silicon, Keka alternative">
+  
+  <!-- OpenGraph / Social -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://saleharoud.github.io/RARFlow/">
+  <meta property="og:title" content="RARFlow — The Native macOS RAR & Archive Suite">
+  <meta property="og:description" content="Full RAR extraction & creation, Quick Look inside archives, AES-256 encryption, and Finder right-click integration on Apple Silicon.">
+  <meta property="og:image" content="assets/icon-512.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/icon-512.png">
+  <link rel="apple-touch-icon" href="assets/icon-512.png">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Background Ambience -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="#" class="brand">
+        <img src="assets/icon-512.png" alt="RARFlow Icon" class="brand-icon" width="36" height="36">
+        <span class="brand-name">RARFlow</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#interactive-demo">Interactive Demo</a>
+        <a href="#formats">Formats</a>
+        <a href="#specs">Specifications</a>
+        <a href="https://github.com/Saleharoud/RARFlow" target="_blank" rel="noopener" class="github-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span>Star on GitHub</span>
+        </a>
+      </div>
+
+      <div class="nav-actions">
+        <a href="assets/RARFlow.dmg" class="btn btn-primary nav-download" download>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+          </svg>
+          <span>Download .dmg</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero-badge">
+      <span class="badge-tag">v1.0 Ready</span>
+      <span class="badge-text">Engineered for Apple Silicon & macOS Sequoia</span>
+    </div>
+
+    <h1 class="hero-title">
+      The archive manager<br>
+      <span class="gradient-text">built specifically for Mac.</span>
+    </h1>
+
+    <p class="hero-subtitle">
+      Extract any RAR file without command lines or dependencies. Inspect contents with Spacebar Quick Look, compress with professional LZMA2/AES-256 engines, and right-click from Finder.
+    </p>
+
+    <div class="hero-cta-group">
+      <a href="assets/RARFlow.dmg" class="btn btn-large btn-primary" download>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+        </svg>
+        <span>Download RARFlow for macOS</span>
+        <span class="btn-sub">Universal • 4.7 MB</span>
+      </a>
+
+      <div class="terminal-copy-box">
+        <code>git clone https://github.com/Saleharoud/RARFlow.git</code>
+        <button class="copy-btn" id="copy-cmd-btn" title="Copy to clipboard">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span class="copy-text">Copy</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="hero-specs-row">
+      <div class="spec-pill"><span class="dot"></span> 100% Native Swift 6 & SwiftUI</div>
+      <div class="spec-pill"><span class="dot"></span> Zero Terminal Setup Required</div>
+      <div class="spec-pill"><span class="dot"></span> Free & Open Source (MIT)</div>
+      <div class="spec-pill"><span class="dot"></span> No Ads, No Telemetry, No Subscriptions</div>
+    </div>
+
+    <!-- Hero Window UI Mockup -->
+    <div class="mac-window-container">
+      <div class="mac-window">
+        <!-- Titlebar -->
+        <div class="window-titlebar">
+          <div class="window-controls">
+            <span class="control-dot dot-close"></span>
+            <span class="control-dot dot-min"></span>
+            <span class="control-dot dot-zoom"></span>
+          </div>
+          <div class="window-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM10 4h4v3h-4V4z"/>
+            </svg>
+            <span>RARFlow — Studio_Project_Archive.rar (RAR 5.0 Solid)</span>
+          </div>
+          <div class="window-titlebar-right">
+            <span class="tag-status">4.2 GB • 84% Ratio</span>
+          </div>
+        </div>
+
+        <!-- Window Toolbar -->
+        <div class="window-toolbar">
+          <div class="toolbar-group">
+            <button class="tb-btn tb-active"><span class="icon">📂</span> Browser</button>
+            <button class="tb-btn"><span class="icon">📥</span> Drop Zone</button>
+          </div>
+          <div class="toolbar-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" placeholder="Search 1,248 files..." readonly value="trailer_">
+          </div>
+          <div class="toolbar-actions">
+            <button class="tb-btn tb-quicklook" title="Preview with Spacebar"><span class="icon">👁️</span> Quick Look</button>
+            <button class="tb-btn tb-test"><span class="icon">🛡️</span> Test Integrity</button>
+            <button class="tb-btn tb-extract-sel">Extract Selected (2)</button>
+            <button class="tb-btn tb-extract-all">Extract All</button>
+          </div>
+        </div>
+
+        <!-- App Body Layout -->
+        <div class="window-body">
+          <!-- Sidebar -->
+          <div class="window-sidebar">
+            <div class="sidebar-section-title">QUICK ACCESS</div>
+            <div class="sidebar-item"><span class="icon">📥</span> Drop Zone</div>
+            <div class="sidebar-item active"><span class="icon">🗂️</span> Archive Browser <span class="badge-dot"></span></div>
+            <div class="sidebar-item"><span class="icon">➕</span> New Archive...</div>
+            <div class="sidebar-item"><span class="icon">⚙️</span> Settings</div>
+
+            <div class="sidebar-section-title">RECENTS</div>
+            <div class="sidebar-item"><span class="icon">📦</span> Project_Renders.7z</div>
+            <div class="sidebar-item"><span class="icon">📦</span> Photos_2026.zip</div>
+            <div class="sidebar-item"><span class="icon">📦</span> Kernel_Patch.tar.xz</div>
+          </div>
+
+          <!-- Main File Table -->
+          <div class="window-table-area">
+            <div class="table-header-row">
+              <span class="col col-name">Name</span>
+              <span class="col col-size">Size</span>
+              <span class="col col-packed">Packed</span>
+              <span class="col col-ratio">Ratio</span>
+              <span class="col col-date">Modified</span>
+              <span class="col col-crc">CRC32</span>
+            </div>
+
+            <div class="table-rows">
+              <div class="table-row">
+                <span class="col col-name"><span class="row-icon">📁</span> Assets_4K/</span>
+                <span class="col col-size">--</span>
+                <span class="col col-packed">--</span>
+                <span class="col col-ratio">--</span>
+                <span class="col col-date">Today 18:24</span>
+                <span class="col col-crc">--</span>
+              </div>
+              <div class="table-row selected-row">
+                <span class="col col-name"><span class="row-icon">🎬</span> trailer_final_prores.mov</span>
+                <span class="col col-size">2.41 GB</span>
+                <span class="col col-packed">1.62 GB</span>
+                <span class="col col-ratio ratio-good">67.2%</span>
+                <span class="col col-date">Oct 29, 2026</span>
+                <span class="col col-crc">D84A92F1</span>
+              </div>
+              <div class="table-row selected-row">
+                <span class="col col-name"><span class="row-icon">🎵</span> trailer_audio_master.flac</span>
+                <span class="col col-size">148.2 MB</span>
+                <span class="col col-packed">72.4 MB</span>
+                <span class="col col-ratio ratio-good">48.8%</span>
+                <span class="col col-date">Oct 28, 2026</span>
+                <span class="col col-crc">A71C80B4</span>
+              </div>
+              <div class="table-row">
+                <span class="col col-name"><span class="row-icon">📄</span> trailer_storyboard.pdf</span>
+                <span class="col col-size">18.5 MB</span>
+                <span class="col col-packed">7.1 MB</span>
+                <span class="col col-ratio ratio-great">38.4%</span>
+                <span class="col col-date">Oct 27, 2026</span>
+                <span class="col col-crc">4920E671</span>
+              </div>
+              <div class="table-row">
+                <span class="col col-name"><span class="row-icon">🔒</span> production_credentials.key</span>
+                <span class="col col-name-badge">AES-256</span>
+                <span class="col col-size">4.2 KB</span>
+                <span class="col col-packed">1.8 KB</span>
+                <span class="col col-ratio">42.8%</span>
+                <span class="col col-date">Oct 25, 2026</span>
+                <span class="col col-crc">9B1348F0</span>
+              </div>
+            </div>
+
+            <!-- Table Status Bar -->
+            <div class="table-statusbar">
+              <span>Showing 5 of 1,248 items</span>
+              <span class="sep">•</span>
+              <span>Total Uncompressed: 4.86 GB</span>
+              <span class="sep">•</span>
+              <span>Compressed: 2.14 GB</span>
+              <span class="status-right">2 items selected (2.56 GB) — Press <strong>Space</strong> for Quick Look</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Interactive Simulator Widget -->
+  <section class="section" id="interactive-demo">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Hands-On Experience</span>
+        <h2 class="section-title">See how RARFlow works in action.</h2>
+        <p class="section-desc">Try this interactive simulator right in your browser. Switch modes to experience instant extraction, Spacebar Quick Look, and custom compression.</p>
+      </div>
+
+      <div class="interactive-card">
+        <div class="sim-toolbar">
+          <div class="sim-tabs">
+            <button class="sim-tab active" data-mode="extract">1. Smart Extract Prompt</button>
+            <button class="sim-tab" data-mode="quicklook">2. Quick Look Preview</button>
+            <button class="sim-tab" data-mode="compress">3. Pro Compression</button>
+            <button class="sim-tab" data-mode="rightclick">4. Finder Right-Click</button>
+          </div>
+          <div class="sim-indicator">
+            <span class="pulse-dot"></span> Live Simulation
+          </div>
+        </div>
+
+        <div class="sim-viewport">
+          <!-- View 1: Extract Dialog -->
+          <div class="sim-view active" id="view-extract">
+            <div class="dialog-card">
+              <div class="dialog-icon-col">
+                <img src="assets/icon-512.png" alt="App Icon" class="dialog-app-icon" width="64" height="64">
+              </div>
+              <div class="dialog-content-col">
+                <h3 class="dialog-title">Extract Archive?</h3>
+                <p class="dialog-msg">Do you want to extract <strong>Client_Deliverables_v3.rar</strong> now?</p>
+                <div class="dialog-details-box">
+                  <div class="detail-line"><strong>Archive Format:</strong> RAR 5.0 (Multi-volume, Solid)</div>
+                  <div class="detail-line"><strong>Physical Size:</strong> 642.8 MB (Uncompressed: 1.84 GB)</div>
+                  <div class="detail-line"><strong>Destination:</strong> ~/Downloads/Client_Deliverables_v3/</div>
+                </div>
+                <div class="dialog-checkbox">
+                  <label><input type="checkbox" id="sim-remember-check"> Always perform this action without asking</label>
+                </div>
+                <div class="dialog-btn-row">
+                  <button class="btn btn-secondary sim-btn" id="sim-btn-browse">Browse Files</button>
+                  <button class="btn btn-secondary sim-btn" id="sim-btn-to">Extract To...</button>
+                  <button class="btn btn-primary sim-btn" id="sim-btn-extract">Extract Now</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="sim-progress-overlay hidden" id="sim-extract-progress">
+              <div class="progress-box">
+                <div class="progress-title-row">
+                  <span class="progress-spinner"></span>
+                  <span class="progress-title">Extracting Client_Deliverables_v3.rar...</span>
+                </div>
+                <div class="progress-bar-track">
+                  <div class="progress-bar-fill" id="sim-fill"></div>
+                </div>
+                <div class="progress-footer-row">
+                  <span class="progress-file" id="sim-file-text">Decompressing high_res_master.psd...</span>
+                  <span class="progress-pct" id="sim-pct-text">0%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- View 2: QuickLook -->
+          <div class="sim-view" id="view-quicklook">
+            <div class="ql-wrapper">
+              <div class="ql-window">
+                <div class="ql-bar">
+                  <span>Quick Look Preview — Spacebar Pressed</span>
+                  <span class="ql-close">✕</span>
+                </div>
+                <div class="ql-content">
+                  <div class="ql-badge-preview">
+                    <div class="ql-image-box">
+                      <div class="preview-art">
+                        <span class="art-icon">📸</span>
+                        <div class="art-text">architecture_render_01.png</div>
+                        <div class="art-meta">3840 × 2160 • 12.8 MB • Inside RAR archive</div>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="ql-caption">Zero extraction needed. RARFlow extracts only the requested file to a memory-backed cache and invokes macOS <code>QLPreviewPanel</code> in milliseconds.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- View 3: Compress -->
+          <div class="sim-view" id="view-compress">
+            <div class="compress-card">
+              <div class="comp-header">
+                <h4>Create New Archive</h4>
+                <span class="comp-badge">Compressing 14 items • 1.2 GB</span>
+              </div>
+              <div class="comp-grid">
+                <div class="comp-field">
+                  <label>Archive Name:</label>
+                  <input type="text" value="Release_Artifacts" readonly>
+                </div>
+                <div class="comp-field">
+                  <label>Format:</label>
+                  <select disabled>
+                    <option>7-Zip Archive (.7z) [Highest Ratio]</option>
+                    <option>RAR Archive (.rar)</option>
+                    <option>ZIP Archive (.zip)</option>
+                  </select>
+                </div>
+                <div class="comp-field">
+                  <label>Compression Level:</label>
+                  <select disabled>
+                    <option>Ultra (9 - Maximum Ratio)</option>
+                  </select>
+                </div>
+                <div class="comp-field">
+                  <label>AES-256 Password:</label>
+                  <input type="password" value="••••••••••••" readonly>
+                </div>
+              </div>
+              <div class="comp-toggles">
+                <span class="tag-pill active">✓ Hide File Headers (-mhe=on)</span>
+                <span class="tag-pill active">✓ Clean .DS_Store & macOS junk</span>
+                <span class="tag-pill active">✓ Solid Archiving (-ms=on)</span>
+                <span class="tag-pill">Split: 700 MB CD</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- View 4: RightClick -->
+          <div class="sim-view" id="view-rightclick">
+            <div class="finder-mock">
+              <div class="finder-item">
+                <span class="f-icon">📦</span>
+                <span class="f-name">archive_sample.rar</span>
+              </div>
+              <div class="context-menu">
+                <div class="cm-item">Open</div>
+                <div class="cm-item">Open With ▸</div>
+                <div class="cm-sep"></div>
+                <div class="cm-item cm-highlight"><span class="cm-icon">⚡</span> Quick Actions ▸</div>
+                <div class="submenu">
+                  <div class="cm-item cm-active"><span class="cm-badge">✦</span> Extract using RARFlow</div>
+                  <div class="cm-item cm-active"><span class="cm-badge">✦</span> Compress using RARFlow</div>
+                </div>
+                <div class="cm-sep"></div>
+                <div class="cm-item">Get Info</div>
+                <div class="cm-item">Move to Trash</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Features Grid -->
+  <section class="section bg-elevated" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Engineered for Performance</span>
+        <h2 class="section-title">Everything you need in an archiver.</h2>
+        <p class="section-desc">Designed as a true macOS citizen with native controls, hardware acceleration, and the full feature set of professional archiving tools.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feat-icon-box cyan">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          </div>
+          <h3 class="feat-title">Universal RAR 1.5–7.x Support</h3>
+          <p class="feat-desc">Full compatibility with every RAR specification. Handles RAR 4.x, modern RAR 5.x, split volumes (.part01.rar, .r00), and encrypted password archives with ease.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feat-icon-box purple">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          </div>
+          <h3 class="feat-title">Clean macOS Metadata Stripping</h3>
+          <p class="feat-desc">Tired of Windows friends complaining about <code>.DS_Store</code>, <code>__MACOSX</code>, and <code>._*</code> resource forks? RARFlow automatically strips junk files when creating archives.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feat-icon-box blue">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+          <h3 class="feat-title">AES-256 & Hidden Headers</h3>
+          <p class="feat-desc">Military-grade AES-256 encryption. Enable header encryption (<code>-mhe=on</code>) to ensure even filenames and folder structures remain invisible until the password is provided.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feat-icon-box green">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+          </div>
+          <h3 class="feat-title">Spacebar Quick Look</h3>
+          <p class="feat-desc">Press Space on any file in an archive to preview videos, PDF documents, high-res photos, or code without decompressing the entire archive to your disk.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feat-icon-box orange">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>
+          </div>
+          <h3 class="feat-title">Multi-Volume Volume Splitting</h3>
+          <p class="feat-desc">Split large archives into chunks for easy sharing or storage: presets for 100 MB, 700 MB CD, 4 GB FAT32 limit, 4.7 GB DVD, 25 GB Blu-Ray, or custom MB sizes.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feat-icon-box pink">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <h3 class="feat-title">Zero External Dependencies</h3>
+          <p class="feat-desc">Self-contained arm64 engines bundled directly inside <code>RARFlow.app/Contents/Helpers/</code>. No Homebrew or command-line installs needed. Just drag and drop.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Format Matrix Table -->
+  <section class="section" id="formats">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Format Specifications</span>
+        <h2 class="section-title">Supported Archive Formats</h2>
+        <p class="section-desc">Comprehensive compatibility with high-performance codecs and hash verification.</p>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Format</th>
+              <th>Extraction</th>
+              <th>Creation</th>
+              <th>AES-256 Encryption</th>
+              <th>Header Hiding</th>
+              <th>Multi-Volume Splitting</th>
+              <th>Max Level</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>RAR / RAR5 (.rar)</strong></td>
+              <td><span class="check">✓ Full</span></td>
+              <td><span class="check">✓ Native</span></td>
+              <td><span class="check">✓ Yes</span></td>
+              <td><span class="check">✓ Yes (-hp)</span></td>
+              <td><span class="check">✓ Yes (-v)</span></td>
+              <td>Best (m5)</td>
+            </tr>
+            <tr>
+              <td><strong>7-Zip (.7z)</strong></td>
+              <td><span class="check">✓ Full</span></td>
+              <td><span class="check">✓ Native</span></td>
+              <td><span class="check">✓ Yes</span></td>
+              <td><span class="check">✓ Yes (-mhe)</span></td>
+              <td><span class="check">✓ Yes (-v)</span></td>
+              <td>Ultra (mx9)</td>
+            </tr>
+            <tr>
+              <td><strong>Standard ZIP (.zip)</strong></td>
+              <td><span class="check">✓ Full</span></td>
+              <td><span class="check">✓ Native</span></td>
+              <td><span class="check">✓ Yes</span></td>
+              <td><span class="cross">✕</span></td>
+              <td><span class="cross">✕</span></td>
+              <td>Ultra (mx9)</td>
+            </tr>
+            <tr>
+              <td><strong>TAR Archive (.tar)</strong></td>
+              <td><span class="check">✓ Full</span></td>
+              <td><span class="check">✓ Native</span></td>
+              <td><span class="cross">✕</span></td>
+              <td><span class="cross">✕</span></td>
+              <td><span class="cross">✕</span></td>
+              <td>Store</td>
+            </tr>
+            <tr>
+              <td><strong>GZip Tarball (.tar.gz)</strong></td>
+              <td><span class="check">✓ Full</span></td>
+              <td><span class="check">✓ Native</span></td>
+              <td><span class="cross">✕</span></td>
+              <td><span class="cross">✕</span></td>
+              <td><span class="cross">✕</span></td>
+              <td>Ultra (mx9)</td>
+            </tr>
+            <tr>
+              <td><strong>XZ Tarball (.tar.xz)</strong></td>
+              <td><span class="check">✓ Full</span></td>
+              <td><span class="check">✓ Native</span></td>
+              <td><span class="cross">✕</span></td>
+              <td><span class="cross">✕</span></td>
+              <td><span class="cross">✕</span></td>
+              <td>Ultra (mx9)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technical Highlights -->
+  <section class="section bg-elevated" id="specs">
+    <div class="container">
+      <div class="split-row">
+        <div class="split-text">
+          <span class="section-tag">Architecture</span>
+          <h2 class="section-title">Designed purely in Swift 6 for Apple Silicon.</h2>
+          <p class="section-desc">No Electron runtime bloat. No Java dependencies. RARFlow starts in under 0.1s, consumes less than 30MB of RAM, and takes full advantage of multi-threaded compression across all performance cores.</p>
+          
+          <ul class="specs-list">
+            <li><strong>Hardware Multithreading:</strong> Automatically assigns compression chunks to all CPU cores.</li>
+            <li><strong>Memory-Efficient Streaming:</strong> Pipes standard output directly without buffering gigabytes into RAM.</li>
+            <li><strong>Apple Silicon Native:</strong> Pure arm64 binaries compiled with strict Swift 6 concurrency safety.</li>
+            <li><strong>Finder Quick Actions:</strong> Native macOS Service and LaunchServices integration.</li>
+          </ul>
+        </div>
+
+        <div class="split-card">
+          <div class="code-terminal">
+            <div class="terminal-bar">
+              <span class="control-dot dot-close"></span>
+              <span class="control-dot dot-min"></span>
+              <span class="control-dot dot-zoom"></span>
+              <span class="term-title">Package.swift</span>
+            </div>
+            <pre><code>// Swift 6.0 Strict Concurrency
+import PackageDescription
+
+let package = Package(
+    name: "RARFlow",
+    platforms: [.macOS(.v14)],
+    products: [
+        .executable(name: "RARFlow", targets: ["RARFlow"])
+    ],
+    targets: [
+        .executableTarget(name: "RARFlow", path: "Sources/RARFlow"),
+        .testTarget(name: "RARFlowTests", dependencies: ["RARFlow"])
+    ]
+)</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action Banner -->
+  <section class="section cta-section">
+    <div class="container">
+      <div class="cta-card">
+        <img src="assets/icon-512.png" alt="RARFlow" class="cta-icon" width="80" height="80">
+        <h2 class="cta-title">Upgrade your archive workflow today.</h2>
+        <p class="cta-desc">Download RARFlow directly or clone the repository to compile from source. 100% free, forever.</p>
+        <div class="cta-actions">
+          <a href="https://github.com/Saleharoud/RARFlow/releases" class="btn btn-large btn-primary">Download .dmg Installer</a>
+          <a href="https://github.com/Saleharoud/RARFlow" target="_blank" rel="noopener" class="btn btn-large btn-secondary">View on GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-left">
+        <div class="footer-brand">
+          <img src="assets/icon-512.png" alt="RARFlow" width="24" height="24">
+          <span>RARFlow</span>
+        </div>
+        <p class="footer-copyright">Copyright © 2026 RARFlow. Released under the MIT License.</p>
+      </div>
+
+      <div class="footer-right">
+        <a href="https://github.com/Saleharoud/RARFlow" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/Saleharoud/RARFlow/issues" target="_blank" rel="noopener">Issues</a>
+        <a href="https://github.com/Saleharoud/RARFlow/releases" target="_blank" rel="noopener">Releases</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
